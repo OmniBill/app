@@ -3,90 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SwiftBill - Authentication</title>
+    <title>SwiftBill - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-950 text-slate-100 flex items-center justify-center min-h-screen">
+<body class="bg-slate-950 text-white flex items-center justify-center min-h-screen">
 
-    <div class="bg-slate-900/70 backdrop-blur-2xl border border-slate-800 p-8 rounded-3xl shadow-2xl w-full max-w-md mx-4">
+    <div class="bg-slate-900 p-8 rounded-3xl shadow-2xl w-full max-w-sm border border-slate-800">
+        <h1 id="form-title" class="text-2xl font-bold text-center mb-6">Sign In</h1>
         
-        <div class="text-center mb-8">
-            <h1 id="form-title" class="text-3xl font-black text-white tracking-wide">Sign In</h1>
-            <p id="form-desc" class="text-slate-400 text-sm mt-2">Welcome back to SwiftBill</p>
-        </div>
-
-        <form id="auth-form" class="space-y-5">
-            <div>
-                <label class="block text-slate-400 text-xs font-bold uppercase mb-2">Email</label>
-                <input type="email" id="email" required class="w-full px-4 py-3.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:border-indigo-500 focus:outline-none transition">
-            </div>
-            <div>
-                <label class="block text-slate-400 text-xs font-bold uppercase mb-2">Password</label>
-                <input type="password" id="password" required class="w-full px-4 py-3.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:border-indigo-500 focus:outline-none transition">
-            </div>
-
-            <button type="submit" id="submit-btn" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition">Sign In</button>
+        <form id="auth-form" class="space-y-4">
+            <input type="email" id="email" placeholder="Email" required class="w-full p-3 bg-slate-950 border border-slate-700 rounded-lg">
+            <input type="password" id="password" placeholder="Password" required class="w-full p-3 bg-slate-950 border border-slate-700 rounded-lg">
+            <button type="submit" id="submit-btn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-bold">Sign In</button>
         </form>
 
-        <div class="mt-6 text-center text-sm text-slate-400">
-            <p id="toggle-text">Don't have an account? <button id="toggle-btn" class="text-indigo-400 font-bold hover:underline">Sign Up</button></p>
-        </div>
-        
-        <div id="error-msg" class="mt-4 p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-xl text-center hidden"></div>
+        <div class="my-4 text-center text-slate-500">OR</div>
+
+        <button id="google-btn" class="w-full py-3 bg-white text-black font-bold rounded-lg hover:bg-slate-200 transition">
+            Sign in with Google
+        </button>
+
+        <p class="mt-6 text-center text-sm">
+            <span id="toggle-text">Don't have an account?</span> 
+            <button id="toggle-btn" class="text-indigo-400 font-bold underline">Sign Up</button>
+        </p>
+        <div id="error-msg" class="mt-4 text-rose-400 text-xs text-center hidden"></div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyDzC-okomVG-pe08RH-JPp0s6NG1BBGIEE",
           authDomain: "a-one-chat-e3642.firebaseapp.com",
-          databaseURL: "https://a-one-chat-e3642-default-rtdb.firebaseio.com",
           projectId: "a-one-chat-e3642",
           storageBucket: "a-one-chat-e3642.firebasestorage.app",
           messagingSenderId: "91366490582",
-          appId: "1:91366490582:web:669e8a9bfc54f424a82477",
-          measurementId: "G-T4WVE2QKXB"
+          appId: "1:91366490582:web:669e8a9bfc54f424a82477"
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const provider = new GoogleAuthProvider(); // Google Auth Provider
 
         let isLogin = true;
         const form = document.getElementById('auth-form');
-        const submitBtn = document.getElementById('submit-btn');
         const toggleBtn = document.getElementById('toggle-btn');
-        const formTitle = document.getElementById('form-title');
+        const googleBtn = document.getElementById('google-btn');
         const errorMsg = document.getElementById('error-msg');
 
+        // Toggle Login/Signup
         toggleBtn.addEventListener('click', () => {
             isLogin = !isLogin;
-            formTitle.textContent = isLogin ? 'Sign In' : 'Sign Up';
-            submitBtn.textContent = isLogin ? 'Sign In' : 'Sign Up';
-            document.getElementById('toggle-text').innerHTML = isLogin ? 
-                "Don't have an account? <button id='toggle-btn' class='text-indigo-400 font-bold hover:underline'>Sign Up</button>" :
-                "Already have an account? <button id='toggle-btn' class='text-indigo-400 font-bold hover:underline'>Sign In</button>";
-            errorMsg.classList.add('hidden');
+            document.getElementById('form-title').textContent = isLogin ? 'Sign In' : 'Sign Up';
+            document.getElementById('submit-btn').textContent = isLogin ? 'Sign In' : 'Sign Up';
+            document.getElementById('toggle-text').textContent = isLogin ? "Don't have an account?" : "Already have an account?";
+            toggleBtn.textContent = isLogin ? "Sign Up" : "Sign In";
         });
 
+        // Email/Password Auth
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-
             try {
-                if (isLogin) {
-                    await signInWithEmailAndPassword(auth, email, password);
-                } else {
-                    await createUserWithEmailAndPassword(auth, email, password);
-                    alert("Account created successfully! Please Sign In.");
-                    location.reload();
-                }
+                if (isLogin) await signInWithEmailAndPassword(auth, email, password);
+                else await createUserWithEmailAndPassword(auth, email, password);
                 window.location.href = 'dashboard.html';
-            } catch (error) {
-                errorMsg.textContent = error.message;
+            } catch (err) {
+                errorMsg.textContent = err.message;
+                errorMsg.classList.remove('hidden');
+            }
+        });
+
+        // Google Auth
+        googleBtn.addEventListener('click', async () => {
+            try {
+                await signInWithPopup(auth, provider);
+                window.location.href = 'dashboard.html';
+            } catch (err) {
+                errorMsg.textContent = err.message;
                 errorMsg.classList.remove('hidden');
             }
         });
