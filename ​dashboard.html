@@ -6,16 +6,9 @@
     <title>SwiftBill - Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #020617; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
-    </style>
 </head>
 <body class="bg-slate-950 text-slate-100 flex h-screen overflow-hidden">
 
-    <!-- Sidebar -->
     <aside class="w-64 bg-slate-900/80 backdrop-blur-xl border-r border-slate-800 flex flex-col justify-between hidden md:flex z-20">
         <div>
             <div class="p-6 border-b border-slate-800 flex items-center gap-3">
@@ -25,10 +18,10 @@
                 <h1 class="text-2xl font-black bg-gradient-to-r from-white via-slate-200 to-indigo-400 bg-clip-text text-transparent tracking-wide">SwiftBill</h1>
             </div>
             <nav class="p-4 space-y-2">
-                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-xl font-medium shadow-lg shadow-indigo-600/20"><i class="fa-solid fa-chart-pie w-5"></i> Dashboard</a>
-                <a href="billing.html" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800/60 hover:text-white rounded-xl font-medium transition"><i class="fa-solid fa-file-invoice-dollar w-5"></i> Billing</a>
-                <a href="inventory.html" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800/60 hover:text-white rounded-xl font-medium transition"><i class="fa-solid fa-boxes-stacked w-5"></i> Inventory</a>
-                <a href="reports.html" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800/60 hover:text-white rounded-xl font-medium transition"><i class="fa-solid fa-chart-line w-5"></i> Reports</a>
+                <a href="/app/dashboard.html" class="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-xl font-medium shadow-lg shadow-indigo-600/20"><i class="fa-solid fa-chart-pie w-5"></i> Dashboard</a>
+                <a href="/app/billing.html" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800/60 hover:text-white rounded-xl font-medium transition"><i class="fa-solid fa-file-invoice-dollar w-5"></i> Billing</a>
+                <a href="/app/inventory.html" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800/60 hover:text-white rounded-xl font-medium transition"><i class="fa-solid fa-boxes-stacked w-5"></i> Inventory</a>
+                <a href="/app/reports.html" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800/60 hover:text-white rounded-xl font-medium transition"><i class="fa-solid fa-chart-line w-5"></i> Reports</a>
             </nav>
         </div>
         <div class="p-4 border-t border-slate-800">
@@ -38,7 +31,6 @@
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="flex-1 flex flex-col h-full overflow-hidden">
         <header class="bg-slate-900/50 backdrop-blur-md border-b border-slate-800/80 px-6 py-4 flex justify-between items-center z-10">
             <h2 class="text-xl font-bold text-white">Dashboard Overview</h2>
@@ -46,7 +38,6 @@
         </header>
 
         <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Stats Cards -->
             <div class="bg-slate-900/60 border border-slate-800 p-6 rounded-2xl shadow-xl backdrop-blur-xl">
                 <p class="text-slate-400 text-xs font-bold uppercase">Today's Sales</p>
                 <h3 id="today-sales" class="text-3xl font-black text-indigo-400 mt-2">₹ 0.00</h3>
@@ -62,7 +53,6 @@
         </div>
     </main>
 
-    <!-- Firebase Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -75,8 +65,7 @@
           projectId: "a-one-chat-e3642",
           storageBucket: "a-one-chat-e3642.firebasestorage.app",
           messagingSenderId: "91366490582",
-          appId: "1:91366490582:web:669e8a9bfc54f424a82477",
-          measurementId: "G-T4WVE2QKXB"
+          appId: "1:91366490582:web:669e8a9bfc54f424a82477"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -88,24 +77,21 @@
                 document.getElementById('user-email').textContent = user.email;
                 fetchStats();
             } else {
-                window.location.href = 'index.html';
+                window.location.href = '/app/index.html';
             }
         });
 
         function fetchStats() {
-            // Fetch Products Count
             onValue(ref(db, 'products'), (snapshot) => {
                 const count = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
                 document.getElementById('total-products').textContent = count;
             });
 
-            // Fetch Bills and calculate Today's Sales
             onValue(ref(db, 'bills'), (snapshot) => {
                 const bills = snapshot.val();
                 if (bills) {
                     const billList = Object.values(bills);
                     const today = new Date().toDateString();
-                    
                     let sales = 0;
                     billList.forEach(b => {
                         if (new Date(b.timestamp).toDateString() === today) {
@@ -119,9 +105,8 @@
         }
 
         document.getElementById('logout-btn').addEventListener('click', () => {
-            signOut(auth).then(() => window.location.href = 'index.html');
+            signOut(auth).then(() => window.location.href = '/app/index.html');
         });
     </script>
 </body>
 </html>
-
