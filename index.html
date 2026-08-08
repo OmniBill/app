@@ -70,7 +70,7 @@
             try {
                 if (isLogin) await signInWithEmailAndPassword(auth, email, password);
                 else await createUserWithEmailAndPassword(auth, email, password);
-                window.location.href = 'dashboard.html';
+                window.location.href = '/app/dashboard.html';
             } catch (err) {
                 errorMsg.textContent = err.message;
                 errorMsg.classList.remove('hidden');
